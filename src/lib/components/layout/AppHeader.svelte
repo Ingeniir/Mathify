@@ -1,10 +1,14 @@
 <script lang="ts">
+  import { saveCurrentDocument } from "$lib/services/document-actions";
+  import { documentStore } from "$lib/stores/document";
+
+
   function handleOpenFolder() {
     console.info("Open folder requested");
   }
 
   function handleSave() {
-    console.info("Save requested");
+    saveCurrentDocument();
   }
 
   function handleCompile() {
@@ -20,7 +24,10 @@
 
     <div class="brand-text">
       <strong>Typst Editor</strong>
-      <span>Sans dossier ouvert</span>
+
+      <span>
+        {$documentStore.path ?? "Sans dossier ouvert"}
+      </span>
     </div>
   </div>
 
@@ -29,8 +36,12 @@
       Ouvrir un dossier
     </button>
 
-    <button type="button" onclick={handleSave}>
-      Enregistrer
+    <button
+      type="button"
+      class:has-changes={$documentStore.dirty}
+      onclick={handleSave}
+    >
+      Enregistrer{#if $documentStore.dirty} •{/if}
     </button>
 
     <button
@@ -116,6 +127,10 @@
   button:hover {
     background: var(--color-surface-hover);
     border-color: var(--color-border);
+  }
+
+  button.has-changes {
+    color: #ffffff;
   }
 
   .primary-button {

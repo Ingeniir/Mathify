@@ -1,27 +1,37 @@
+<script lang="ts">
+  import { saveCurrentDocument } from "$lib/services/document-actions";
+  import { documentStore } from "$lib/stores/document";
+
+
+  import CodeEditor from "./CodeEditor.svelte";
+</script>
+
 <section class="editor-pane" aria-label="Éditeur">
   <div class="tabs-bar">
     <div class="tab active">
       <span class="file-icon" aria-hidden="true">T</span>
-      <span class="file-name">Nouveau document</span>
+
+      <span class="file-name">
+        {$documentStore.name}
+      </span>
+
+      {#if $documentStore.dirty}
+        <span
+          class="dirty-indicator"
+          title="Modifications non enregistrées"
+          aria-label="Modifications non enregistrées"
+        ></span>
+      {/if}
     </div>
   </div>
 
-  <div class="editor-placeholder">
-    <div class="line-numbers" aria-hidden="true">
-      <span>1</span>
-      <span>2</span>
-      <span>3</span>
-      <span>4</span>
-      <span>5</span>
-      <span>6</span>
-    </div>
-
-    <pre><code><span class="keyword">#set</span> page(
-  paper: <span class="string">"a4"</span>,
-  margin: <span class="number">2cm</span>,
-)
-
-<span class="heading">= Ma première fiche</span></code></pre>
+  <div class="editor-container">
+    <CodeEditor
+      content={$documentStore.content}
+      onContentChange={documentStore.setContent}
+      onCursorChange={documentStore.setCursor}
+      onSaveRequest={saveCurrentDocument}
+    />
   </div>
 </section>
 
@@ -39,6 +49,7 @@
     flex-shrink: 0;
     height: 36px;
     overflow-x: auto;
+    overflow-y: hidden;
     background: var(--color-surface);
     border-bottom: 1px solid var(--color-border);
   }
@@ -46,8 +57,8 @@
   .tab {
     display: flex;
     align-items: center;
-    min-width: 150px;
-    max-width: 220px;
+    min-width: 180px;
+    max-width: 260px;
     padding: 0 12px;
     gap: 8px;
     color: var(--color-text-muted);
@@ -70,62 +81,25 @@
   }
 
   .file-name {
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  .editor-placeholder {
-    display: flex;
-    flex: 1;
-    min-height: 0;
-    padding-top: 14px;
-    overflow: auto;
-    font-family: var(--font-family-monospace);
-    font-size: 13px;
-    line-height: 1.7;
-  }
-
-  .line-numbers {
-    display: flex;
+  .dirty-indicator {
     flex-shrink: 0;
-    flex-direction: column;
-    width: 48px;
-    color: var(--color-text-subtle);
-    text-align: right;
-    user-select: none;
+    width: 8px;
+    height: 8px;
+    margin-left: auto;
+    background: var(--color-text);
+    border-radius: 50%;
   }
 
-  .line-numbers span {
-    padding-right: 14px;
-  }
-
-  pre {
-    margin: 0;
-    padding: 0 24px 24px 0;
-    color: var(--color-text);
-    font: inherit;
-    white-space: pre;
-  }
-
-  code {
-    font: inherit;
-  }
-
-  .keyword {
-    color: #c586c0;
-  }
-
-  .string {
-    color: #ce9178;
-  }
-
-  .number {
-    color: #b5cea8;
-  }
-
-  .heading {
-    color: #4ec9b0;
-    font-weight: 600;
+  .editor-container {
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
   }
 </style>

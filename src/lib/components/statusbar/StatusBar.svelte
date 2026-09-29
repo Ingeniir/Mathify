@@ -1,8 +1,18 @@
+<script lang="ts">
+  import { documentStore } from "$lib/stores/document";
+</script>
+
 <footer class="status-bar">
   <div class="status-group">
     <span class="status-item">
-      <span class="status-dot idle" aria-hidden="true"></span>
-      Prêt
+      <span
+        class:modified={$documentStore.dirty}
+        class:idle={!$documentStore.dirty}
+        class="status-dot"
+        aria-hidden="true"
+      ></span>
+
+      {$documentStore.dirty ? "Modifié" : "Prêt"}
     </span>
 
     <span class="status-item">0 erreur</span>
@@ -10,7 +20,11 @@
   </div>
 
   <div class="status-group">
-    <span class="status-item">Ligne 1, colonne 1</span>
+    <span class="status-item">
+      Ligne {$documentStore.cursor.line},
+      colonne {$documentStore.cursor.column}
+    </span>
+
     <span class="status-item">Typst</span>
     <span class="status-item">UTF-8</span>
   </div>
@@ -53,5 +67,19 @@
 
   .status-dot.idle {
     background: #afc9ef;
+  }
+
+  .status-dot.modified {
+    background: #ffd866;
+  }
+
+  @media (max-width: 900px) {
+    .status-group {
+      gap: 8px;
+    }
+
+    .status-item:nth-child(3) {
+      display: none;
+    }
   }
 </style>
