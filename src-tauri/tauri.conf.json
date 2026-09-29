@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "mathify",
+  "productName": "Mathify",
   "version": "0.1.0",
   "identifier": "com.mathify.dev",
   "build": {
@@ -12,9 +12,13 @@
   "app": {
     "windows": [
       {
-        "title": "mathify",
-        "width": 800,
-        "height": 600
+        "title": "Mathify",
+        "width": 1280,
+        "height": 800,
+        "minWidth": 800,
+        "minHeight": 500,
+        "resizable": true,
+        "fullscreen": false
       }
     ],
     "security": {
