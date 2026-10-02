@@ -4,6 +4,10 @@
 
 
   import CodeEditor from "./CodeEditor.svelte";
+
+  function handleSaveRequest() {
+    void saveCurrentDocument();
+  }
 </script>
 
 <section class="editor-pane" aria-label="Éditeur">
@@ -30,7 +34,7 @@
       content={$documentStore.content}
       onContentChange={documentStore.setContent}
       onCursorChange={documentStore.setCursor}
-      onSaveRequest={saveCurrentDocument}
+      onSaveRequest={handleSaveRequest}
     />
   </div>
 </section>

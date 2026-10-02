@@ -4,6 +4,7 @@ import type {
   EditorDocument,
   EditorPosition,
 } from "$lib/types/document";
+import type { FilePayload } from "$lib/types/file";
 
 const initialContent = `#set page(
   paper: "a4",
@@ -16,29 +17,31 @@ const initialContent = `#set page(
 
 = Ma première fiche
 
-Cette fiche est maintenant modifiable avec CodeMirror.
+Cette fiche est modifiable avec CodeMirror.
 
 == Définition
 
 Soit $f: RR -> RR$ une fonction continue.
 `;
 
-const initialDocument: EditorDocument = {
-  id: "untitled-document",
-  name: "Nouveau document.typ",
-  path: null,
-  content: initialContent,
-  savedContent: initialContent,
-  dirty: false,
-  cursor: {
-    line: 1,
-    column: 1,
-  },
-};
+function createUntitledDocument(): EditorDocument {
+  return {
+    id: crypto.randomUUID(),
+    name: "Nouveau document.typ",
+    path: null,
+    content: initialContent,
+    savedContent: initialContent,
+    dirty: false,
+    cursor: {
+      line: 1,
+      column: 1,
+    },
+  };
+}
 
 function createDocumentStore() {
   const { subscribe, set, update } = writable<EditorDocument>(
-    initialDocument,
+    createUntitledDocument(),
   );
 
   function setContent(content: string) {
@@ -56,31 +59,46 @@ function createDocumentStore() {
     }));
   }
 
-  function markAsSaved() {
-    update((document) => ({
-      ...document,
-      savedContent: document.content,
+  function loadFile(file: FilePayload) {
+    set({
+      id: crypto.randomUUID(),
+      name: file.name,
+      path: file.path,
+      content: file.content,
+      savedContent: file.content,
       dirty: false,
-    }));
+      cursor: {
+        line: 1,
+        column: 1,
+      },
+    });
   }
 
-  function loadDocument(document: EditorDocument) {
-    set(document);
+  function markAsSaved(file?: FilePayload) {
+    update((document) => {
+      const content = file?.content ?? document.content;
+
+      return {
+        ...document,
+        name: file?.name ?? document.name,
+        path: file?.path ?? document.path,
+        content,
+        savedContent: content,
+        dirty: false,
+      };
+    });
   }
 
   function reset() {
-    set({
-      ...initialDocument,
-      id: `untitled-${Date.now()}`,
-    });
+    set(createUntitledDocument());
   }
 
   return {
     subscribe,
     setContent,
     setCursor,
+    loadFile,
     markAsSaved,
-    loadDocument,
     reset,
   };
 }

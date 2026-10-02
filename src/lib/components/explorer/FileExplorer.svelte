@@ -1,39 +1,57 @@
 <script lang="ts">
+  import { openTypstFile } from "$lib/services/document-actions";
+  import { documentStore } from "$lib/stores/document";
+
   function handleOpenWorkspace() {
     console.info("Workspace selection requested");
+  }
+
+  function handleOpenFile() {
+    void openTypstFile();
   }
 </script>
 
 <aside class="file-explorer" aria-label="Explorateur de fichiers">
   <div class="panel-header">
-    <span>EXPLORATEUR</span>
+    <span>DOCUMENT</span>
 
     <button
       type="button"
-      title="Ouvrir un dossier"
-      aria-label="Ouvrir un dossier"
-      onclick={handleOpenWorkspace}
+      title="Ouvrir un fichier"
+      aria-label="Ouvrir un fichier"
+      onclick={handleOpenFile}
     >
       +
     </button>
   </div>
 
-  <div class="empty-state">
-    <div class="empty-icon" aria-hidden="true">
-      ◇
+  {#if $documentStore.path}
+    <div class="current-file">
+      <span class="file-icon" aria-hidden="true">T</span>
+
+      <span class="file-name" title={$documentStore.path}>
+        {$documentStore.name}
+      </span>
     </div>
+  {:else}
+    <div class="empty-state">
+      <div class="empty-icon" aria-hidden="true">
+        ◇
+      </div>
 
-    <p>Aucun dossier ouvert</p>
+      <p>Aucun fichier ouvert</p>
 
-    <span>
-      Ouvre un dossier contenant tes fichiers Typst pour commencer.
-    </span>
+      <span>
+        Ouvre un fichier Typst existant ou enregistre le document actuel.
+      </span>
 
-    <button type="button" onclick={handleOpenWorkspace}>
-      Ouvrir un dossier
-    </button>
-  </div>
+      <button type="button" onclick={handleOpenFile}>
+        Ouvrir un fichier
+      </button>
+    </div>
+  {/if}
 </aside>
+
 
 <style>
   .file-explorer {
@@ -43,6 +61,31 @@
     flex-direction: column;
     background: var(--color-surface);
     border-right: 1px solid var(--color-border);
+  }
+
+  .file-icon {
+    flex-shrink: 0;
+    color: var(--color-primary);
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .file-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .current-file {
+    display: flex;
+    align-items: center;
+    height: 32px;
+    padding: 0 12px;
+    gap: 8px;
+    color: var(--color-text);
+    font-size: 12px;
+    background: var(--color-surface-hover);
   }
 
   .panel-header {

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { saveCurrentDocument } from "$lib/services/document-actions";
+  import { saveCurrentDocument, openTypstFile, saveCurrentDocumentAs } from "$lib/services/document-actions";
   import { documentStore } from "$lib/stores/document";
 
 
@@ -7,8 +7,16 @@
     console.info("Open folder requested");
   }
 
+  function handleOpenFile() {
+    void openTypstFile();
+  }
+
   function handleSave() {
-    saveCurrentDocument();
+    void saveCurrentDocument();
+  }
+
+  function handleSaveAs() {
+    void saveCurrentDocumentAs();
   }
 
   function handleCompile() {
@@ -43,6 +51,10 @@
     >
       Enregistrer{#if $documentStore.dirty} •{/if}
     </button>
+
+    <butotn type="button" onlcick={handleSaveAs}>
+      Enregistrer sous
+    </butotn>
 
     <button
       class="primary-button"
